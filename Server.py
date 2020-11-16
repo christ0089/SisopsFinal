@@ -73,3 +73,19 @@ def initWorkers(num):
 	    t = threading.Thread(target=worker, args=(i,))
 	    threads.append(t)
 	    t.start()
+    return 
+
+def lasserOn():
+	return ""
+
+def pickCards():
+	return ""
+
+def putCards():
+	return ""
+
+def pressButton():
+	return ""
+
+def close():
+	return 
