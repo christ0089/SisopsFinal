@@ -22,15 +22,15 @@ sock.connect(server_address)
 messages = ['un mensaje...', 'otro mensaje...']
 try:
     # Send data
-    for m in messages:
-		print ( 'client sending "%s"' % m.)
+	for m in messages:
+		print ( 'client sending "%s"' % m)
 		sock.sendall(m.encode('utf-8'))	# a string variable needs to be encoded
-# to utf-8 to convert it to a byte string
-# only bytes travel through network
+		# to utf-8 to convert it to a byte string
+		# only bytes travel through network
 		# Look for the response
     
 		respuesta = sock.recv(256)
-		print ( 'client received "%s"' % respuesta.decode(‘utf-8’)) # bytes to string
+		print ( 'client received "%s"' % respuesta.decode('utf-8')) # bytes to string
 finally:
     print ( 'closing socket')
     sock.close()
