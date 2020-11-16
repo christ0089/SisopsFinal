@@ -9,6 +9,7 @@
 import socket
 import sys
 import time
+import threading
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,3 +57,19 @@ finally:
 #When communication with a client is finished, the connection needs to be cleaned up using close(). This example uses a try:finally block to ensure that close() is always called, even in the event of an error.
 
 
+
+
+#Hello
+
+def worker(num):
+	"""thread worker function"""
+	print ('Worker: %s' % num)
+	return
+
+
+def initWorkers(num):
+    threads = []
+    for i in range(num):
+	    t = threading.Thread(target=worker, args=(i,))
+	    threads.append(t)
+	    t.start()
