@@ -19,26 +19,28 @@ sock.connect(server_address)
 
 # After the connection is established, data can be sent through the socket with sendall() and received with recv(), just as in the server.
 
-messages = ['un mensaje...', 'otro mensaje...']
 try:
-    # Send data
-	for m in messages:
-		print ( 'client sending "%s"' % m)
-		sock.sendall(m.encode('utf-8'))	# a string variable needs to be encoded
-		# to utf-8 to convert it to a byte string
-		# only bytes travel through network
-		# Look for the response
-    
-		respuesta = sock.recv(256)
-		print ( 'client received "%s"' % respuesta.decode('utf-8')) # bytes to string
+	while True:
+		mensaje = input( "Que mensaje quieres enviar? ")
+		# Send data
+		if mensaje != 'exit':
+			print ( 'client sending "%s"' % mensaje)
+			sock.sendall(mensaje.encode('utf-8'))	# a string variable needs to be encoded
+			# to utf-8 to convert it to a byte string
+			# only bytes travel through network
+			# Look for the response
+		
+			respuesta = sock.recv(256)
+			print ( 'client received "%s"' % respuesta.decode('utf-8')) # bytes to string
+		else:
+			break
 finally:
     print ( 'closing socket')
     sock.close()
 
-def main(args):
+def main():
     return 0
 
 if __name__ == '__main__':
-    import sys
     sys.exit(main(sys.argv))
 
