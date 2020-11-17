@@ -56,11 +56,6 @@ finally:
 
 #When communication with a client is finished, the connection needs to be cleaned up using close(). This example uses a try:finally block to ensure that close() is always called, even in the event of an error.
 
-
-
-
-#Hello
-
 def worker(num):
 	"""thread worker function"""
 	print ('Worker: %s' % num)
@@ -89,3 +84,22 @@ def pressButton():
 
 def close():
 	return 
+
+def runFunc(data, args = 0):
+	switcher = {
+		"Apertura" : initWorkers,
+		"Cierre" : close,
+		"Meter Tarjeta" : putCards,
+		"RecogeTarjeta": pickCards,
+		"LaserOnE": 5,
+		"LaserOffE": 6,
+		"OprimeBoton": pressButton,
+		"LaserOffS": 9,
+		"LaserOnS": 10
+	}
+
+	func = switcher.get(data, lambda: "Invalid Input")
+	func()
+
+#Hello
+
