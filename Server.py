@@ -11,6 +11,12 @@ import sys
 import time
 import threading
 
+threads = []
+
+entrances = None
+exits = None
+spaces = None
+
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -40,8 +46,8 @@ try:
 		data = connection.recv(256)
 		print ( 'server received "%s"' % data.decode('utf-8')) # data bytes back to str
 		if data:
-			print ( 'sending answer back to the client')
-	
+			# print ( 'sending answer back to the client')
+			runFunc(data)
 			connection.sendall(b'va de regreso...' + data) # b converts str to
                                                                                                                 # bytes
 		else:
@@ -60,18 +66,58 @@ def worker(num):
 	"""thread worker function"""
 	print ('Worker: %s' % num)
 	return
-
-
+	
 def initWorkers(num):
-    threads = []
-    for i in range(num):
-	    t = threading.Thread(target=worker, args=(i,))
-	    threads.append(t)
-	    t.start()
+    
     return 
 
-def lasserOn():
+def apertura(entrancesNum, exitsNum, spacesNum):
+	global threadsEntrances
+	global entrances
+	entrances = []
+	for i in range(entrancesNum):
+		t = threading.Thread(target=pressButton, args=(i,))
+		threadsEntrances.append(t)
+		t.start()
+		hold = thread.Semaphore(1)
+		entrances.append(hold)
+	
+	global threadsExits
+	global exits
+	exits = []
+	for i in range(exitsNum):
+		t = threading.Thread(target=worker, args=(i,))
+		threadsExits.append(t)
+		t.start()
+		hold = thread.Semaphore(1)
+		exits.append(hold)
+	
+	global spaces
+	spaces = threading.Semaphore(spacesNum)
 	return ""
+	
+def pressButton(num):
+	
+	return ""
+	
+def lasserOnE():
+	
+	return ""
+	
+def lasserOffE():
+	
+	return ""
+	
+def lasserOnS():
+	
+	return ""
+	
+def lasserOffS():
+	
+	return ""
+
+
+
 
 def pickCards():
 	return ""
@@ -79,15 +125,15 @@ def pickCards():
 def putCards():
 	return ""
 
-def pressButton():
-	return ""
+
 
 def close():
 	return 
 
 def runFunc(data, args = 0):
+	values = data.split(" ")
 	switcher = {
-		"Apertura" : initWorkers,
+		"Apertura" : apertura,
 		"Cierre" : close,
 		"Meter Tarjeta" : putCards,
 		"RecogeTarjeta": pickCards,
@@ -98,7 +144,7 @@ def runFunc(data, args = 0):
 		"LaserOnS": 10
 	}
 
-	func = switcher.get(data, lambda: "Invalid Input")
+	func = switcher.get(values[0], lambda: "Invalid Input")
 	func()
 
 #Hello
