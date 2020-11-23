@@ -8,6 +8,7 @@
 
 import socket
 import sys
+import time
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -35,8 +36,9 @@ try:
 		else:
 			break
 finally:
-    print ( 'closing socket')
-    sock.close()
+	time.sleep(20)
+	print ( 'closing socket')
+	sock.close()
 
 def main():
     return 0
