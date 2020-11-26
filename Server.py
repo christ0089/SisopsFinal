@@ -10,7 +10,7 @@ import socket
 import sys
 import time
 import threading
-#import queue
+import queue
 
 entrances = []
 exits = []
@@ -30,7 +30,7 @@ def pressButton(num):
 		print ( 'inside ' + str(num))
 		time.sleep(3)
 		print ( 'outside ' + str(num))
-		return ""
+	return ""
 	
 def lasserOnE():
 	
@@ -69,7 +69,7 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		t = threading.Thread(target=pressButton, args=(i,))
 		threadsEntrances.append(t)
 		t.start()
-		hold = queue.Queue(maxsize = 100)
+		hold = queue.Queue(100)
 		entrances.append(hold)
 	
 	global threadsExits
@@ -79,7 +79,7 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		t = threading.Thread(target=worker, args=(i,))
 		threadsExits.append(t)
 		t.start()
-		hold = queue.Queue(maxsize = 100)
+		hold = queue.Queue(100)
 		exits.append(hold)
 	
 	global spaces
@@ -129,6 +129,7 @@ try:
 			data += " va de regreso..."
 			connection.sendall(data.encode('utf-8'))
                                                                                                                 # bytes
+                                                                                                                
 		else:
 			break
 			
