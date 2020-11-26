@@ -10,9 +10,10 @@ import socket
 import sys
 import time
 import threading
+#import queue
 
-entrances = None
-exits = None
+entrances = []
+exits = []
 spaces = None
 threadsEntrances = []
 threadsExits = []
@@ -22,14 +23,14 @@ def worker(num):
     return 
 	
 def pressButton(num):
-	print(str(num))
-	global entrances
-	entrances[num].acquire()
-	print ( 'inside ' + str(num))
-	time.sleep(3)
-	entrances[num].release()
-	print ( 'outside ' + str(num))
-	return ""
+	while True:	
+		print(str(num))
+		global entrances
+		car = entrances[num].get()
+		print ( 'inside ' + str(num))
+		time.sleep(3)
+		print ( 'outside ' + str(num))
+		return ""
 	
 def lasserOnE():
 	
@@ -68,7 +69,7 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		t = threading.Thread(target=pressButton, args=(i,))
 		threadsEntrances.append(t)
 		t.start()
-		hold = threading.Semaphore(1)
+		hold = queue.Queue(maxsize = 100)
 		entrances.append(hold)
 	
 	global threadsExits
@@ -78,7 +79,7 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		t = threading.Thread(target=worker, args=(i,))
 		threadsExits.append(t)
 		t.start()
-		hold = threading.Semaphore(1)
+		hold = queue.Queue(maxsize = 100)
 		exits.append(hold)
 	
 	global spaces
@@ -92,7 +93,7 @@ def runFunc(data):
 		apertura(int(values[2]), int(values[3]), int(values[4]))
 
 	if "oprimeBoton" == values[1]:
-		threadsEntrances[int(values[2])-1]
+		entrances[int(values[2])-1].put(1)
 		
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -125,7 +126,8 @@ try:
 		if data:
 			print ( 'server received "%s"' % data) # data bytes back to str
 			runFunc(data)
-			#connection.sendall('va de regreso...' + data) # b converts str to
+			data += " va de regreso..."
+			connection.sendall(data.encode('utf-8'))
                                                                                                                 # bytes
 		else:
 			break
