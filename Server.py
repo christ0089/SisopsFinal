@@ -11,6 +11,7 @@ import sys
 import time
 import threading
 import queue
+from datetime import datetime
 
 
 # Create a TCP/IP socket
@@ -31,14 +32,64 @@ removed = 0
 #semaforos binario de entradas y salidas
 entranceLocks = []
 exitLocks = []
+getCardLocks = []
+laserOffEntLock = []
+laserOnEntLock = []
 #array de queues
 entradas = []
 salidas = []
+getCardTime = []
+getLaserOffEntTime =[]
+getLaserOnEntTime = []
 #semaforo general de espacios
 spaces = None
 
 threadsEntrances = []
 threadsExits = []
+
+#variable con el reloj en timepo inicial
+baseTime = None
+
+def getCard(num): 
+    while True:
+        global getCardLocks
+        global getCardTime
+        getCardLocks[num].acquire()
+        newTime = datetime.now()
+        clock = newTime - baseTime
+        clock = getCardTime[num] - clock.seconds
+        print("Comienza a imprimir tarjeta")
+        if clock > 0:
+            time.sleep(clock)
+        newTime = datetime.now()
+        print("Se imprimio tarjeta a las ", newTime.strftime("%H:%M:%S"))
+
+
+def laserOffEnt(num):
+    while True:
+        global laserOffEntLock
+        global getLaserOffEntTime
+        laserOffEntLock[num].acquire()
+        newTime = datetime.now()
+        clock = newTime - baseTime
+        clock = getLaserOffEntTime[num] - clock.seconds
+        if clock > 0:
+            time.sleep(clock)
+        print("Auto comienza a pasar")
+
+def laserOnEnt(num):
+    while True:
+        global laserOffEntLock
+        global getLaserOffEntTime
+        laserOnEntLock[num].acquire()
+        newTime = datetime.now()
+        clock = newTime - baseTime
+        clock = getLaserOffEntTime[num] - clock.seconds
+        if clock > 0:
+            time.sleep(clock)
+        print("Auto termina de pasar")
+        time.sleep(5)
+        print("Se bajo la barrera")
 
 def insertCard(num):
 	while True:
@@ -87,22 +138,37 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 
 	global entranceLocks
 	global exitLocks
+	global getCardLocks
+	global laserOffEntLock
+	global laserOnEntLock
 
-	parkedLock =  threading.Semaphore(1) #semaforo binario para entradas
-	removedLock = threading.Semaphore(1) #semaforo binario para salidas
+	global getCardTime
+	global getLaserOffEntTime
+	global getLaserOnEntTime
+
+	baseTime = datetime.now()
+
+	oneLock =  threading.Semaphore(1) #semaforo binario para entradas
+	zeroLock = threading.Semaphore(0) #semaforo binario para salidas
 	
 	for i in range(entrancesNum):
 		t = threading.Thread(target=pressButton, args=(i,))
 		threadsEntrances.append(t)
 		entradas.append(queue.Queue(100)) #cada entrada tiene una queue de 100
-		entranceLocks.append(parkedLock) #insertar semaforo
+		getCardTime.append(queue.Queue(100))
+		getLaserOffEntTime.append(queue.Queue(100))
+		getLaserOnEntTime.append(queue.Queue(100))
+		entranceLocks.append(oneLock) #insertar semaforo
+		getCardLocks.append(zeroLock)
+		laserOffEntLock.append(zeroLock)
+		laserOnEntLock.append(zeroLock)
 		t.start()
 
 	for i in range(exitsNum):
 		t2 = threading.Thread(target=insertCard, args=(i,))
-		threadsExits.append(t)
+		threadsExits.append(t2)
 		salidas.append(queue.Queue(100)) #cada salida tiene una queue de 100
-		exitLocks.append(removedLock) #insertar semaforo 
+		exitLocks.append(oneLock) #insertar semaforo 
 		t2.start()
 
 
@@ -122,7 +188,7 @@ def runFunc(data):
 			if len(values) == 3:
 				numEnt = int(values[2])
 				print("presionando en entrada...", numEnt)
-				entradas[numEnt - 1].put(1)
+				entradas[numEnt - 1].put(int(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
@@ -137,6 +203,39 @@ def runFunc(data):
 				numSal = int(values[2])
 				print("metiendo en salida...", numSal)
 				salidas[numSal - 1].put(1)
+			else:
+				print("Error en los argumentos!")
+		else:
+			print("No se ha iniciado el estacionamiento")
+
+	if "recogeTarjeta" == values[1]:
+		if isOpen:
+			if len(values) == 3:
+				numEnt = int(values[2])
+				print("recogiendo tarjeta...", numEnt)
+				getCardTime[numEnt - 1].put(int(values[0]))
+			else:
+				print("Error en los argumentos!")
+		else:
+			print("No se ha iniciado el estacionamiento")
+
+	if "laserOffE" == values[1]:
+		if isOpen:
+			if len(values) == 3:
+				numEnt = int(values[2])
+				print("recogiendo tarjeta...", numEnt)
+				getLaserOffEntTime[numEnt - 1].put(int(values[0]))
+			else:
+				print("Error en los argumentos!")
+		else:
+			print("No se ha iniciado el estacionamiento")
+
+	if "laserOnE" == values[1]:
+		if isOpen:
+			if len(values) == 3:
+				numEnt = int(values[2])
+				print("recogiendo tarjeta...", numEnt)
+				getLaserOnEntTime[numEnt - 1].put(int(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
