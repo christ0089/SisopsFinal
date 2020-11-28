@@ -35,12 +35,16 @@ exitLocks = []
 getCardLocks = []
 laserOffEntLock = []
 laserOnEntLock = []
+laserOffSalLock = []
+laserOnSalLock = []
 #array de queues
 entradas = []
 salidas = []
 getCardTime = []
 getLaserOffEntTime =[]
 getLaserOnEntTime = []
+getLaserOffSalTime = []
+getLaserOnSalTime = []
 #semaforo general de espacios
 spaces = None
 
@@ -84,12 +88,34 @@ def laserOnEnt(num):
         laserOnEntLock[num].acquire()
         newTime = datetime.now()
         clock = newTime - baseTime
-        clock = getLaserOffEntTime[num] - clock.seconds
+        clock = getLaserOnEntTime[num] - clock.seconds
         if clock > 0:
             time.sleep(clock)
         print("Auto termina de pasar")
         time.sleep(5)
         print("Se bajo la barrera")
+
+def laserOffSal(num):
+    while True:
+        global laserOffSalLock
+        global getLaserOffSalTime
+        laserOffSalLock[num].acquire()
+        newTime = datetime.now()
+        clock = newTime - baseTime
+        clock = getLaserOffSalTime[num] - clock.seconds
+        if clock > 0:
+            time.sleep(clock)
+
+def laserOnSal(num):
+    while True:
+        global laserOnSalLock
+        global getLaserOnSalTime
+        laserOnSalLock[num].acquire()
+        newTime = datetime.now()
+        clock = newTime - baseTime
+        clock = getLaserOnSalTime[num] - clock.seconds
+        if clock > 0:
+            time.sleep(clock)
 
 def insertCard(num):
 	while True:
@@ -141,10 +167,14 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 	global getCardLocks
 	global laserOffEntLock
 	global laserOnEntLock
+	global laserOffSalLock
+	global laserOnSalLock
 
 	global getCardTime
 	global getLaserOffEntTime
 	global getLaserOnEntTime
+	global getLaserOffSalTime
+	global getLaserOnSalTime
 
 	baseTime = datetime.now()
 
@@ -158,10 +188,15 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		getCardTime.append(queue.Queue(100))
 		getLaserOffEntTime.append(queue.Queue(100))
 		getLaserOnEntTime.append(queue.Queue(100))
+		getLaserOffSalTime.append(queue.Queue(100))
+		getLaserOnSalTime.append(queue.Queue(100))
+
 		entranceLocks.append(oneLock) #insertar semaforo
 		getCardLocks.append(zeroLock)
 		laserOffEntLock.append(zeroLock)
 		laserOnEntLock.append(zeroLock)
+		laserOffSalLock.append(zeroLock)
+		laserOnSalLock.append(zeroLock)
 		t.start()
 
 	for i in range(exitsNum):
@@ -223,7 +258,7 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
-				print("recogiendo tarjeta...", numEnt)
+				print("Apagando laser de entrada...", numEnt)
 				getLaserOffEntTime[numEnt - 1].put(int(values[0]))
 			else:
 				print("Error en los argumentos!")
@@ -234,12 +269,34 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
-				print("recogiendo tarjeta...", numEnt)
+				print("Prendiendo laser de entrada...", numEnt)
 				getLaserOnEntTime[numEnt - 1].put(int(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
 			print("No se ha iniciado el estacionamiento")
+
+	if "laserOffS" == values[1]:
+		if isOpen:
+			if len(values) == 3:
+				numEnt = int(values[2])
+				print("Apagando laser de salida...", numEnt)
+				getLaserOffSalTime[numEnt - 1].put(int(values[0]))
+			else:
+				print("Error en los argumentos!")
+		else:
+			print("No se ha iniciado el estacionamiento")
+
+	if "laserOnS" == values[1]:
+			if isOpen:
+				if len(values) == 3:
+					numEnt = int(values[2])
+					print("Prendiendo laser de salida...", numEnt)
+					getLaserOnSalTime[numEnt - 1].put(int(values[0]))
+				else:
+					print("Error en los argumentos!")
+			else:
+				print("No se ha iniciado el estacionamiento")
 
 	
 def multi_threaded_client(connection):
