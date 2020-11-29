@@ -245,7 +245,6 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 
 
 def runFunc(data):
-	print('algo xd')
 	values = data.split(" ")
 	if "apertura" == values[1]:
 		if isOpen:
