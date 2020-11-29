@@ -12,7 +12,7 @@ print ( 'connecting to %s port %s' % server_address)
 sock.connect(server_address)                             # ready. Connection established
 
 messages = ['0.00 apertura 2 2 2',   # un estacionamiento pequeño pero con dos entradas y dos salidas...,\
-			'1.00 oprimeBoton 1',# entra carro',\
+			'1.00 oprimeBoton 2',# entra carro',\
 			'1.00 oprimeBoton 1',
 			'1.00 oprimeBoton 1',
 			'1.00 oprimeBoton 1'
