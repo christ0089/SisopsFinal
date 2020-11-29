@@ -206,8 +206,8 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 
 	baseTime = datetime.now()
 
-	oneLock =  threading.Semaphore(1) #semaforo binario para entradas
-	zeroLock = threading.Semaphore(0) #semaforo binario para salidas
+	
+	
 	
 	for i in range(entrancesNum):
 		t = threading.Thread(target=pressButton, args=(i,))
@@ -224,10 +224,10 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		getLaserOffEntTime.append(queue.Queue(100))
 		getLaserOnEntTime.append(queue.Queue(100))
 		
-		entranceLocks.append(oneLock) #insertar semaforo
-		getCardLocks.append(zeroLock)
-		laserOffEntLock.append(zeroLock)
-		laserOnEntLock.append(zeroLock)
+		entranceLocks.append(threading.Semaphore(1)) #insertar semaforo
+		getCardLocks.append(threading.Semaphore(0))
+		laserOffEntLock.append(threading.Semaphore(0))
+		laserOnEntLock.append(threading.Semaphore(0))
 		t.start()
 		t1.start()
 		t2.start()
@@ -241,13 +241,14 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		getLaserOffSalTime.append(queue.Queue(100))
 		getLaserOnSalTime.append(queue.Queue(100))
 		
-		exitLocks.append(oneLock) #insertar semaforo 
-		laserOffSalLock.append(zeroLock)
-		laserOnSalLock.append(zeroLock)
+		exitLocks.append(threading.Semaphore(1)) #insertar semaforo 
+		laserOffSalLock.append(threading.Semaphore(0))
+		laserOnSalLock.append(threading.Semaphore(0))
 		t2.start()
 
 
 def runFunc(data):
+	print('algo xd')
 	values = data.split(" ")
 	if "apertura" == values[1]:
 		if isOpen:
