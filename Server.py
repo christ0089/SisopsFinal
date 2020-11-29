@@ -110,7 +110,7 @@ def laserOffEnt(num):
 		laserOffEntLock[num].acquire()
 		newTime = datetime.now()
 		clock = newTime - baseTime
-		clock = getLaserOffEntTime[num] - clock.seconds
+		clock = getLaserOffEntTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
 		print("Auto comienza a pasar")
@@ -125,7 +125,7 @@ def laserOnEnt(num):
 		laserOnEntLock[num].acquire()
 		newTime = datetime.now()
 		clock = newTime - baseTime
-		clock = getLaserOnEntTime[num] - clock.seconds
+		clock = getLaserOnEntTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
 		print("Auto termina de pasar")
@@ -206,9 +206,6 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 
 	baseTime = datetime.now()
 
-	
-	
-	
 	for i in range(entrancesNum):
 		t = threading.Thread(target=pressButton, args=(i,))
 		threadsEntrances.append(t)
