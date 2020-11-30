@@ -57,6 +57,8 @@ threadsGetCards = []
 threadsLaserOffEnt = []
 threadsLaserOnEnt = []
 
+threadsLaserOffSal = []
+threadsLaserOnSal = []
 #variable con el reloj en timepo inicial
 baseTime = datetime.now()
 
@@ -138,30 +140,36 @@ def laserOnEnt(num):
 #
 
 def laserOffSal(num):
-    while True:
-        global laserOffSalLock
-        global getLaserOffSalTime
-        laserOffSalLock[num].acquire()
-        newTime = datetime.now()
-        clock = newTime - baseTime
-        clock = getLaserOffSalTime[num] - clock.seconds
-        if clock > 0:
-            time.sleep(clock)
+	global laserOffSalLock
+	global getLaserOffSalTime
+	global laserOnSalLock
+	while True:
+		laserOffSalLock[num].acquire()
+		newTime = datetime.now()
+		clock = newTime - baseTime
+		clock = getLaserOffSalTime[num].get() - clock.seconds
+		if clock > 0:
+			time.sleep(clock)
+		laserOnSalLock[num].release()
 
 def laserOnSal(num):
-    while True:
-        global laserOnSalLock
-        global getLaserOnSalTime
-        laserOnSalLock[num].acquire()
-        newTime = datetime.now()
-        clock = newTime - baseTime
-        clock = getLaserOnSalTime[num] - clock.seconds
-        if clock > 0:
-            time.sleep(clock)
+	global laserOnSalLock
+	global getLaserOnSalTime
+	global exitLocks
+	while True:
+		laserOnSalLock[num].acquire()
+		newTime = datetime.now()
+		clock = newTime - baseTime
+		clock = getLaserOnSalTime[num].get() - clock.seconds
+		if clock > 0:
+			time.sleep(clock)
+		exitLocks[num].release()
 
 def insertCard(num):
+	global salidas
+	global exitLocks
+	global laserOffSalLock
 	while True:
-		global salidas
 		carro = salidas[num]
 		carro.get()#obtener queue
 		exitLocks[num].acquire()
@@ -172,7 +180,7 @@ def insertCard(num):
 		print('saliendo de la salida: ' + str(num + 1))
 		time.sleep(5)
 		print("carros dentro: ", parked)
-		exitLocks[num].release()
+		laserOffSalLock[num].release()
 		print('salio!' + str(num + 1))
 		
 
@@ -189,6 +197,8 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 	global threadsGetCards
 	global threadsLaserOffEnt
 	global threadsLaserOnEnt
+	global threadsLaserOffSal
+	global threadsLaserOnSal
 
 	global entranceLocks
 	global exitLocks
@@ -232,8 +242,13 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		
 
 	for i in range(exitsNum):
-		t2 = threading.Thread(target=insertCard, args=(i,))
-		threadsExits.append(t2)
+		t4 = threading.Thread(target=insertCard, args=(i,))
+		threadsExits.append(t4)
+		t5 = threading.Thread(target=laserOffSal, args=(i,))
+		threads.append(t5)
+		t6 = threading.Thread(target=laserOnSal, args=(i,))
+		threadsLaserOffEnt.append(t6)
+		
 		salidas.append(queue.Queue(100)) #cada salida tiene una queue de 100
 		getLaserOffSalTime.append(queue.Queue(100))
 		getLaserOnSalTime.append(queue.Queue(100))
@@ -241,7 +256,9 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		exitLocks.append(threading.Semaphore(1)) #insertar semaforo 
 		laserOffSalLock.append(threading.Semaphore(0))
 		laserOnSalLock.append(threading.Semaphore(0))
-		t2.start()
+		t4.start()
+		t5.start()
+		t6.start()
 
 
 def runFunc(data):
