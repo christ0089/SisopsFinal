@@ -150,7 +150,9 @@ def laserOffSal(num):
 		clock = getLaserOffSalTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
+		print('Comienza carro salida ' + str(num))
 		laserOnSalLock[num].release()
+		
 
 def laserOnSal(num):
 	global laserOnSalLock
@@ -163,7 +165,9 @@ def laserOnSal(num):
 		clock = getLaserOnSalTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
+		print('Sale carro salida ' + str(num))
 		exitLocks[num].release()
+		
 
 def insertCard(num):
 	global salidas
@@ -183,6 +187,11 @@ def insertCard(num):
 		laserOffSalLock[num].release()
 		print('salio!' + str(num + 1))
 		
+
+def cierre(): 
+	global isOpen
+	isOpen = False
+	print('Se cierra el estacionamineto')
 
 
 def apertura(spacesNum, entrancesNum, exitsNum):
@@ -352,7 +361,11 @@ def runFunc(data):
 					print("Error en los argumentos!")
 			else:
 				print("No se ha iniciado el estacionamiento")
-
+	if "cierre" == values[1]:
+		if isOpen:
+			cierre()
+		else:
+			print("No se ha iniciado el estacionamiento")
 	
 def multi_threaded_client(connection):
 	try:
