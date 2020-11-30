@@ -273,6 +273,7 @@ def runFunc(data):
 				print("Error en los argumentos!")
 	
 	if "oprimeBoton" == values[1]:
+		print('en oprime boton ' + str(len(values)))
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
@@ -288,7 +289,7 @@ def runFunc(data):
 			print("No hay autos estacionados!")
 			return
 		if isOpen:
-			if len(values) == 3:
+			if len(values) == 5:
 				numSal = int(values[2])
 				print("metiendo en salida...", numSal)
 				salidas[numSal - 1].put(1)
@@ -302,7 +303,7 @@ def runFunc(data):
 			if len(values) == 3:
 				numEnt = int(values[2])
 				print("recogiendo tarjeta...", numEnt)
-				getCardTime[numEnt - 1].put(int(values[0]))
+				getCardTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
@@ -313,7 +314,7 @@ def runFunc(data):
 			if len(values) == 3:
 				numEnt = int(values[2])
 				print("Apagando laser de entrada...", numEnt)
-				getLaserOffEntTime[numEnt - 1].put(int(values[0]))
+				getLaserOffEntTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
@@ -324,7 +325,7 @@ def runFunc(data):
 			if len(values) == 3:
 				numEnt = int(values[2])
 				print("Prendiendo laser de entrada...", numEnt)
-				getLaserOnEntTime[numEnt - 1].put(int(values[0]))
+				getLaserOnEntTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
@@ -335,7 +336,7 @@ def runFunc(data):
 			if len(values) == 3:
 				numEnt = int(values[2])
 				print("Apagando laser de salida...", numEnt)
-				getLaserOffSalTime[numEnt - 1].put(int(values[0]))
+				getLaserOffSalTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
 		else:
@@ -346,7 +347,7 @@ def runFunc(data):
 				if len(values) == 3:
 					numEnt = int(values[2])
 					print("Prendiendo laser de salida...", numEnt)
-					getLaserOnSalTime[numEnt - 1].put(int(values[0]))
+					getLaserOnSalTime[numEnt - 1].put(float(values[0]))
 				else:
 					print("Error en los argumentos!")
 			else:
