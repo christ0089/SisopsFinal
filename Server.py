@@ -245,9 +245,9 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 		t4 = threading.Thread(target=insertCard, args=(i,))
 		threadsExits.append(t4)
 		t5 = threading.Thread(target=laserOffSal, args=(i,))
-		threads.append(t5)
+		threadsLaserOffSal.append(t5)
 		t6 = threading.Thread(target=laserOnSal, args=(i,))
-		threadsLaserOffEnt.append(t6)
+		threadsLaserOnEnt.append(t6)
 		
 		salidas.append(queue.Queue(100)) #cada salida tiene una queue de 100
 		getLaserOffSalTime.append(queue.Queue(100))
