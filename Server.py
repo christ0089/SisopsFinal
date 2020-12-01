@@ -204,14 +204,16 @@ def insertCard(num):
 		#seccion critica de la salida
 		if timer[1] == 0:
 			print('{:06.2f} '.format(timer[0]) + 'Carro intento salir por la salida S' + str(num + 1) + ' pero no pago.')
+			exitLocks[num].release()
 		elif (timer[0] - timer[2]) > 15:
 			print('{:06.2f} '.format(timer[0]) + 'Carro intento salir por la salida S' + str(num + 1) + ' pero tardo demasiado')
+			exitLocks[num].release()
 		else:
 			spaces.release()
 			global parked
 			parked -= 1
 			print('{:06.2f} '.format(timer[0]) + "Se empieza a levantar barrera salida.  Carro quiere salir por salida S" + str(num + 1))
-		laserOffSalLock[num].release()
+			laserOffSalLock[num].release()
 		#print('salio!' + str(num + 1))
 		
 
