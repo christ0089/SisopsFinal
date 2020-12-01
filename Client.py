@@ -9,40 +9,33 @@
 import socket
 import sys
 import time
+from datetime import datetime
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#
-# Connect the socket to the port where the server is listening
+
 server_address = ('localhost', 10000)
 print ( 'connecting to %s port %s' % server_address)
 sock.connect(server_address)
 
-# After the connection is established, data can be sent through the socket with sendall() and received with recv(), just as in the server.
 
 try:
 	while True:
-		mensaje = input( "Que mensaje quieres enviar? ")
+		mensaje = input()
+		now = datetime.now()
+		time = now.strftime("%H:%M:%S")
 		# Send data
 		if mensaje != 'exit':
 			print ( 'client sending "%s"' % mensaje)
-			sock.sendall(mensaje.encode('utf-8'))	# a string variable needs to be encoded
-			# to utf-8 to convert it to a byte string
-			# only bytes travel through network
-			# Look for the response
+			mensaje = time + " " + mensaje
+			sock.sendall(mensaje.encode('utf-8'))	
 		
 			respuesta = sock.recv(256)
 			print ( 'client received "%s"' % respuesta.decode('utf-8')) # bytes to string
 		else:
 			break
+
 finally:
-	time.sleep(20)
-	print ( 'closing socket')
-	sock.close()
-
-def main():
-    return 0
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv))
-
+    print ('closing socket')
+    sock.close()
+	
