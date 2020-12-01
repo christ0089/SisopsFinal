@@ -42,8 +42,8 @@ messages = ['0.00 apertura 2 2 2',
 			'110.00 meteTarjeta 2',
 			'128.00 meteTarjeta 2 1 112.00',
 			'132.00 meteTarjeta 2 1 130.00',
-			'139.00 laserOffS 1',
-			'140.00 laserOnS 1',
+			'139.00 laserOffS 2',
+			'140.00 laserOnS 2',
 			'140.00 cierre'         ]
 			
 			

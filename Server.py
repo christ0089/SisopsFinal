@@ -178,6 +178,8 @@ def laserOnSal(num):
 	global laserOnSalLock
 	global getLaserOnSalTime
 	global exitLocks
+	global parked
+	global isOpen
 	while True:
 		laserOnSalLock[num].acquire()
 		timer = getLaserOnSalTime[num].get()
@@ -389,6 +391,7 @@ def runFunc(data):
 			numEnt = int(values[2])
 			#print("Prendiendo laser de salida...", numEnt)
 			getLaserOnSalTime[numEnt - 1].put(float(values[0]))
+			
 			
 		else:
 			print("Error en los argumentos!")
