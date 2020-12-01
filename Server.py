@@ -67,7 +67,6 @@ baseTime = datetime.now()
 #
 
 def pressButton(num):
-	print(num)
 	global entradas
 	global entranceLocks
 	global getCardLocks
@@ -98,12 +97,11 @@ def getCard(num):
 	global laserOffEntLock
 	global baseTime
 
-
 	while True:
 		getCardLocks[num].acquire()
+		timer = getCardTime[num].get()
 		newTime = datetime.now()
-		clock = newTime - baseTime
-		timer = getCardTime[num].get() 
+		clock = newTime - baseTime 
 		clock = timer - clock.seconds
 
 		if clock > 0:
@@ -127,9 +125,9 @@ def laserOffEnt(num):
 	global baseTime
 	while True:
 		laserOffEntLock[num].acquire()
+		timer = getLaserOffEntTime[num].get()
 		newTime = datetime.now()
 		clock = newTime - baseTime
-		timer = getLaserOffEntTime[num].get()
 		clock = timer  - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
@@ -144,9 +142,9 @@ def laserOnEnt(num):
 	global baseTime
 	while True:
 		laserOnEntLock[num].acquire()
+		timer = getLaserOnEntTime[num].get()
 		newTime = datetime.now()
 		clock = newTime - baseTime
-		timer = getLaserOnEntTime[num].get() 
 		clock = timer - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
@@ -166,9 +164,9 @@ def laserOffSal(num):
 	global laserOnSalLock
 	while True:
 		laserOffSalLock[num].acquire()
+		timer = getLaserOffSalTime[num].get() 
 		newTime = datetime.now()
 		clock = newTime - baseTime
-		timer = getLaserOffSalTime[num].get() 
 		clock = timer - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
@@ -182,9 +180,9 @@ def laserOnSal(num):
 	global exitLocks
 	while True:
 		laserOnSalLock[num].acquire()
+		timer = getLaserOnSalTime[num].get()
 		newTime = datetime.now()
 		clock = newTime - baseTime
-		timer = getLaserOnSalTime[num].get()
 		clock = timer - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
@@ -204,12 +202,11 @@ def insertCard(num):
 		timer = carro.get() #obtener queue
 		exitLocks[num].acquire()
 		#seccion critica de la salida
-		print(timer[0] - timer[2])
 		if timer[1] == 0:
 			print('{:06.2f} '.format(timer[0]) + 'Carro intento salir por la salida S' + str(num + 1) + ' pero no pago.')
 		elif (timer[0] - timer[2]) > 15:
 			print('{:06.2f} '.format(timer[0]) + 'Carro intento salir por la salida S' + str(num + 1) + ' pero tardo demasiado')
-		else :
+		else:
 			spaces.release()
 			global parked
 			parked -= 1
@@ -315,7 +312,7 @@ def runFunc(data):
 				print("Error en los argumentos!")
 	
 	if "oprimeBoton" == values[1]:
-		print('en oprime boton ' + str(len(values)))
+		#print('en oprime boton ' + str(len(values)))
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
