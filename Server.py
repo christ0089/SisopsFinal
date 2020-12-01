@@ -78,11 +78,17 @@ def pressButton(num):
 		spaces.acquire()
 		global parked
 		parked += 1
-		print('entrando por: ' + str(num + 1))
+
+		format_str = '{:06.2f} '.format(num) 
+		print(format_str + "Comienza a imprimir tarjeta")
+
 		time.sleep(5)
-		print("carros dentro: ", parked)
+
+		newTime = datetime.now()
+		format_str = '{:06.2f} '.format(num + 5) 
+
+		print(format_str + "Se imprimio tarjeta a las ", newTime.strftime("%H:%M:%S"))
 		getCardLocks[num].release()
-		print('entro! ' + str(num + 1))
 
 
 def getCard(num): 
@@ -90,16 +96,23 @@ def getCard(num):
 	global getCardTime
 	global laserOffEntLock
 	global baseTime
+
+
 	while True:
 		getCardLocks[num].acquire()
 		newTime = datetime.now()
 		clock = newTime - baseTime
 		clock = getCardTime[num].get() - clock.seconds
-		print("Comienza a imprimir tarjeta")
 		if clock > 0:
 			time.sleep(clock)
-		newTime = datetime.now()
-		print("Se imprimio tarjeta a las ", newTime.strftime("%H:%M:%S"))
+
+		format_str = '{:06.2f} '.format(num)
+		print(format_str + "Comienza a imprimir tarjeta")
+
+		time.sleep(5)
+
+		format_str = '{:06.2f} '.format(num + 5) 
+		print(format_str + "Se levanto la barrera")
 		laserOffEntLock[num].release()
 
 
@@ -115,7 +128,7 @@ def laserOffEnt(num):
 		clock = getLaserOffEntTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
-		print("Auto comienza a pasar")
+		print('{:06.2f} '.format(num) + "Auto comienza a pasar")
 		laserOnEntLock[num].release()
 
 def laserOnEnt(num):
@@ -130,9 +143,9 @@ def laserOnEnt(num):
 		clock = getLaserOnEntTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
-		print("Auto termina de pasar")
+		print('{:06.2f} '.format(num) + "Auto termina de pasar")
 		time.sleep(5)
-		print("Se bajo la barrera")
+		print('{:06.2f} '.format(num + 5) + "Se bajo la barrera")
 		getCardLocks[num].release()
         
 # 
@@ -150,7 +163,9 @@ def laserOffSal(num):
 		clock = getLaserOffSalTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
-		print('Comienza carro salida ' + str(num))
+		print('{:06.2f} '.format(num) + 'Comienza carro salida')
+		time.sleep(5)
+		print('{:06.2f} '.format(num + 5) + "Se bajo la barrera")
 		laserOnSalLock[num].release()
 		
 
@@ -165,7 +180,7 @@ def laserOnSal(num):
 		clock = getLaserOnSalTime[num].get() - clock.seconds
 		if clock > 0:
 			time.sleep(clock)
-		print('Sale carro salida ' + str(num))
+		print('{:06.2f} '.format(num)+ 'Sale carro salida ')
 		exitLocks[num].release()
 		
 
@@ -181,11 +196,9 @@ def insertCard(num):
 		spaces.release()
 		global parked
 		parked -= 1
-		print('saliendo de la salida: ' + str(num + 1))
-		time.sleep(5)
-		print("carros dentro: ", parked)
+		print('{:06.2f} '.format(num) + "Se empieza a levantar barrera salida.  Carro quiere salir por salida S1")
 		laserOffSalLock[num].release()
-		print('salio!' + str(num + 1))
+		#print('salio!' + str(num + 1))
 		
 
 def cierre(): 
@@ -272,6 +285,7 @@ def apertura(spacesNum, entrancesNum, exitsNum):
 
 def runFunc(data):
 	values = data.split(" ")
+	print(values[0])
 	if "apertura" == values[1]:
 		if isOpen:
 			print("El estacionamiento ya está abierto.")
@@ -286,7 +300,7 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
-				print("presionando en entrada...", numEnt)
+				#print("presionando en entrada...", numEnt)
 				entradas[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
@@ -300,7 +314,7 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 5:
 				numSal = int(values[2])
-				print("metiendo en salida...", numSal)
+				#print("metiendo en salida...", numSal)
 				salidas[numSal - 1].put(1)
 			else:
 				print("Error en los argumentos!")
@@ -311,7 +325,7 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
-				print("recogiendo tarjeta...", numEnt)
+				#print("recogiendo tarjeta...", numEnt)
 				getCardTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
@@ -322,7 +336,7 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
-				print("Apagando laser de entrada...", numEnt)
+				#print("Apagando laser de entrada...", numEnt)
 				getLaserOffEntTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
@@ -333,7 +347,7 @@ def runFunc(data):
 		if isOpen:
 			if len(values) == 3:
 				numEnt = int(values[2])
-				print("Prendiendo laser de entrada...", numEnt)
+				#print("Prendiendo laser de entrada...", numEnt)
 				getLaserOnEntTime[numEnt - 1].put(float(values[0]))
 			else:
 				print("Error en los argumentos!")
@@ -341,26 +355,26 @@ def runFunc(data):
 			print("No se ha iniciado el estacionamiento")
 
 	if "laserOffS" == values[1]:
-		if isOpen:
-			if len(values) == 3:
-				numEnt = int(values[2])
-				print("Apagando laser de salida...", numEnt)
-				getLaserOffSalTime[numEnt - 1].put(float(values[0]))
-			else:
-				print("Error en los argumentos!")
+		#if isOpen:
+		if len(values) == 3:
+			numEnt = int(values[2])
+			#print("Apagando laser de salida...", numEnt)
+			getLaserOffSalTime[numEnt - 1].put(float(values[0]))
 		else:
-			print("No se ha iniciado el estacionamiento")
+			print("Error en los argumentos!")
+		#else:
+		#	print("No se ha iniciado el estacionamiento")
 
 	if "laserOnS" == values[1]:
-			if isOpen:
-				if len(values) == 3:
-					numEnt = int(values[2])
-					print("Prendiendo laser de salida...", numEnt)
-					getLaserOnSalTime[numEnt - 1].put(float(values[0]))
-				else:
-					print("Error en los argumentos!")
-			else:
-				print("No se ha iniciado el estacionamiento")
+			#if isOpen:
+		if len(values) == 3:
+			numEnt = int(values[2])
+			#print("Prendiendo laser de salida...", numEnt)
+			getLaserOnSalTime[numEnt - 1].put(float(values[0]))
+		else:
+			print("Error en los argumentos!")
+			#else:
+				#print("No se ha iniciado el estacionamiento")
 	if "cierre" == values[1]:
 		if isOpen:
 			cierre()
